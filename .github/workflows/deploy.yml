@@ -82,7 +82,7 @@ jobs:
                   {\"name\": \"SPRING_PROFILES_ACTIVE\", \"value\": \"staging\"},
                   {\"name\": \"RDS_HOST\", \"value\": \"${{ secrets.RDS_HOST }}\"},
                   {\"name\": \"RDS_PORT\", \"value\": \"3306\"},
-                  {\"name\": \"RDS_DB\", \"value\": \"${{ secrets.RDS_DB }}\"},
+                  {\"name\": \"RDS_DB\", \"value\": \"aws-test\"},
                   {\"name\": \"RDS_USERNAME\", \"value\": \"${{ secrets.RDS_USERNAME }}\"},
                   {\"name\": \"RDS_PASSWORD\", \"value\": \"${{ secrets.RDS_PASSWORD }}\"}
                 ]
