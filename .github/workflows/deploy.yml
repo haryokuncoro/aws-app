@@ -98,7 +98,7 @@ jobs:
 
           aws ecs update-service \
             --cluster myapp \
-            --service web-app \
+            --service web-app-service-u63fgyig \
             --task-definition $TASK_DEF_ARN \
             --force-new-deployment \
             --region $AWS_REGION
