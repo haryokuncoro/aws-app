@@ -79,6 +79,7 @@ jobs:
                   }
                 },
                 \"environment\": [
+                  {\"name\": \"SPRING_PROFILES_ACTIVE\", \"value\": \"staging\"},
                   {\"name\": \"RDS_HOST\", \"value\": \"database-1.cdu88yycq3x6.ap-southeast-2.rds.amazonaws.com\"},
                   {\"name\": \"RDS_PORT\", \"value\": \"3306\"},
                   {\"name\": \"RDS_DB\", \"value\": \"aws-test\"},
