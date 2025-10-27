@@ -1,0 +1,44 @@
+name: Deploy to AWS ECS
+
+on:
+  push:
+    tags:
+      - 'staging-*'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+
+      - name: Build with Gradle
+        run: gradle clean bootJar --no-daemon
+
+      - name: Login to AWS ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image
+        run: |
+          IMAGE_TAG=${GITHUB_REF#refs/tags/}
+          docker build -t myapp:$IMAGE_TAG .
+          docker tag myapp:$IMAGE_TAG 865037033636.dkr.ecr.ap-southeast-2.amazonaws.com/myapp:$IMAGE_TAG
+
+      - name: Push Docker image to ECR
+        run: |
+          IMAGE_TAG=${GITHUB_REF#refs/tags/}
+          docker push 865037033636.dkr.ecr.ap-southeast-2.amazonaws.com/myapp:$IMAGE_TAG
+
+      - name: Deploy to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          service: myapp-service
+          cluster: myapp-cluster
+          task-definition: myapp-task
+          image: 865037033636.dkr.ecr.ap-southeast-2.amazonaws.com/myapp:${GITHUB_REF#refs/tags/}
