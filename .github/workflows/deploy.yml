@@ -1,4 +1,4 @@
-name: Deploy to AWS ECS (No JSON)
+name: Deploy to AWS ECS (Dynamic Tag)
 
 on:
   push:
@@ -41,9 +41,20 @@ jobs:
           docker build -t $ECR_REPO:$IMAGE_TAG .
           docker push $ECR_REPO:$IMAGE_TAG
 
-      - name: Update ECS Service
+      - name: Register new ECS task definition
         run: |
           IMAGE_TAG=${GITHUB_REF#refs/tags/}
+          ECR_IMAGE=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/myapp:$IMAGE_TAG
+          aws ecs register-task-definition \
+            --family myapp-task \
+            --requires-compatibilities FARGATE \
+            --network-mode awsvpc \
+            --cpu 512 --memory 1024 \
+            --execution-role-arn arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/ecsTaskExecutionRole \
+            --container-definitions "[{\"name\":\"myapp\",\"image\":\"$ECR_IMAGE\",\"essential\":true,\"portMappings\":[{\"containerPort\":8080,\"protocol\":\"tcp\"}]}]"
+
+      - name: Update ECS Service
+        run: |
           aws ecs update-service \
             --cluster myapp \
             --service web-app-service-u63fgyig \
