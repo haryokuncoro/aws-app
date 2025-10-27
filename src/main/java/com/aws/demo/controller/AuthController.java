@@ -2,6 +2,7 @@ package com.aws.demo.controller;
 
 import com.aws.demo.dto.JwtResponse;
 import com.aws.demo.dto.LoginRequest;
+import com.aws.demo.dto.RegisterRequest;
 import com.aws.demo.model.User;
 import com.aws.demo.repository.UserRepository;
 import com.aws.demo.security.JwtUtils;
@@ -42,10 +43,16 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public User register(@RequestBody User u) {
+    public User register(@RequestBody RegisterRequest u) {
         if (userRepo.existsByUsername(u.getUsername())) throw new RuntimeException("username exists");
         if (userRepo.existsByEmail(u.getEmail())) throw new RuntimeException("email exists");
         if (u.getRoles() == null || u.getRoles().isEmpty()) u.setRoles(Set.of(User.Role.ROLE_USER));
-        return userService.create(u);
+        User user = User.builder()
+                .username(u.getUsername())
+                .password(u.getPassword())
+                .email(u.getEmail())
+                .roles(u.getRoles())
+                .build();
+        return userService.create(user);
     }
 }
